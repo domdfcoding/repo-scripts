@@ -32,12 +32,13 @@ from typing import Iterator
 
 # 3rd party
 from domdf_python_tools.typing import PathLike
+from dotenv import dotenv_values
 from github3 import GitHub
 from github3.repos import ShortRepository
 from github3_utils import iter_repos
 from southwark.repo import Repo
 
-__all__ = ["clone", "iter_my_repos", "users", "organizations"]
+__all__ = ["clone", "get_github_token", "iter_my_repos", "users", "organizations"]
 
 
 def clone(url: str, dest: PathLike) -> Repo:
@@ -71,5 +72,23 @@ organizations = [
 
 
 def iter_my_repos(client: GitHub) -> Iterator[ShortRepository]:
+	"""
+	Iterate over repos in my user and organisations.
+
+	:param client:
+	"""
 
 	yield from iter_repos(client, users, organizations)
+
+
+def get_github_token(env_filename: str = ".env") -> str:
+	"""
+	Return the GitHub token from the ``.env`` file or environment variables.
+
+	:param env_filename:
+	"""
+
+	config = dotenv_values(env_filename)
+	token = config["GITHUB_TOKEN"]
+	assert token is not None
+	return token

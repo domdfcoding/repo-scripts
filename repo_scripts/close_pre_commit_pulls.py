@@ -30,20 +30,17 @@ Close pre-commit.ci pull requests on managed repositories.
 import sys
 
 # 3rd party
-from dotenv import dotenv_values
 from github3 import GitHub
 from github3.pulls import ShortPullRequest
 from github3.repos import Repository as GitHubRepository
 
 # this package
-from repo_scripts.utils import iter_my_repos
-
-config = dotenv_values(".env")
+from repo_scripts.utils import get_github_token, iter_my_repos
 
 if __name__ == "__main__":
 	retv = 0
 
-	client = GitHub(token=config["GITHUB_TOKEN"])
+	client = GitHub(token=get_github_token())
 	for repo in iter_my_repos(client):
 		if repo.archived:
 			continue

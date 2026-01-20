@@ -33,7 +33,6 @@ from tempfile import TemporaryDirectory
 
 # 3rd party
 from domdf_python_tools.paths import PathPlus
-from dotenv import dotenv_values
 from github3 import GitHub
 from github3.exceptions import NotFoundError
 from github3.repos import Repository as GitHubRepository
@@ -41,11 +40,9 @@ from repo_helper_github import GitHubManager
 from repo_helper_github.exceptions import NoSuchRepository, OrganizationError
 
 # this package
-from repo_scripts.utils import clone, iter_my_repos, organizations
+from repo_scripts.utils import clone, get_github_token, iter_my_repos, organizations
 
 __all__ = ["save_checked_repos"]
-
-config = dotenv_values(".env")
 
 data_file = PathPlus("reprotected_repos.json")
 if data_file.exists():
@@ -54,16 +51,16 @@ else:
 	checked_repos = []
 
 
-def save_checked_repos():
+def save_checked_repos() -> None:  # noqa: D103
 	data_file.dump_json(checked_repos)
 
 
-atexit.register(save_checked_repos)
-
 if __name__ == "__main__":
+	atexit.register(save_checked_repos)
+
 	retv = 0
 
-	token = config["GITHUB_TOKEN"]
+	token = get_github_token()
 
 	client = GitHub(token=token)
 	for repo in iter_my_repos(client):

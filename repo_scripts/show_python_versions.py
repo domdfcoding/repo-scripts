@@ -31,7 +31,6 @@ from collections.abc import Mapping
 from typing import Any
 
 # 3rd party
-from dotenv import dotenv_values
 from github3 import GitHub
 from github3.exceptions import NotFoundError
 from github3.repos.contents import Contents
@@ -39,13 +38,11 @@ from packaging.version import Version
 from ruamel.yaml import YAML
 
 # this package
-from repo_scripts.utils import iter_my_repos
-
-config = dotenv_values(".env")
+from repo_scripts.utils import get_github_token, iter_my_repos
 
 if __name__ == "__main__":
 
-	for repo in iter_my_repos(GitHub(token=config["GITHUB_TOKEN"])):
+	for repo in iter_my_repos(GitHub(token=get_github_token())):
 
 		if repo.archived:
 			continue

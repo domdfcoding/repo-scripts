@@ -31,7 +31,6 @@ import sys
 from tempfile import TemporaryDirectory
 
 # 3rd party
-from dotenv import dotenv_values
 from github3 import GitHub
 from github3.exceptions import NotFoundError
 from github3.repos import Repository as GitHubRepository
@@ -39,14 +38,12 @@ from repo_helper_github import GitHubManager
 from repo_helper_github.exceptions import NoSuchRepository, OrganizationError
 
 # this package
-from repo_scripts.utils import clone, iter_my_repos
-
-config = dotenv_values(".env")
+from repo_scripts.utils import clone, get_github_token, iter_my_repos, organizations
 
 if __name__ == "__main__":
 	retv = 0
 
-	token = config["GITHUB_TOKEN"]
+	token = get_github_token()
 
 	client = GitHub(token=token)
 	for repo in iter_my_repos(client):
