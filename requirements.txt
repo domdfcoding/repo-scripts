@@ -2,4 +2,6 @@ github3-utils>=0.7.1
 github3.py>=4.0.1
 packaging>=25.0
 python-dotenv>=1.2.1
+repo-helper-bot@ git+https://github.com/repo-helper/repo-helper-bot.git
+repo-helper-github>=0.9.0
 ruamel.yaml>=0.19.1
