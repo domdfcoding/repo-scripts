@@ -35,26 +35,13 @@ from dotenv import dotenv_values
 from github3 import GitHub
 from github3.exceptions import NotFoundError
 from github3.repos import Repository as GitHubRepository
-from github3_utils import iter_repos
-from repo_helper_bot.updater import clone
 from repo_helper_github import GitHubManager
 from repo_helper_github.exceptions import NoSuchRepository, OrganizationError
 
+# this package
+from repo_scripts.utils import clone, iter_my_repos
+
 config = dotenv_values(".env")
-
-users = [
-		"domdfcoding",
-		]
-
-organizations = [
-		"sphinx-toolbox",
-		"GunShotMatch",
-		"potbanksoftware",
-		"python-coincidence",
-		"python-formate",
-		"repo-helper",
-		"PyMassSpec",
-		]
 
 if __name__ == "__main__":
 	retv = 0
@@ -62,7 +49,7 @@ if __name__ == "__main__":
 	token = config["GITHUB_TOKEN"]
 
 	client = GitHub(token=token)
-	for repo in iter_repos(client, users, organizations):
+	for repo in iter_my_repos(client):
 		if repo.archived:
 			continue
 		if repo.private:

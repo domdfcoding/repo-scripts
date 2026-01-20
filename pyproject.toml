@@ -40,7 +40,7 @@ always = [
     "repo_scripts.close_pre_commit_pulls",
     "repo_scripts.protect_master",
     "repo_scripts.show_excluded_files",
-    "repo_scripts.show_python_version",
+    "repo_scripts.show_python_versions",
     "repo_scripts.update_labels",
 ]
 

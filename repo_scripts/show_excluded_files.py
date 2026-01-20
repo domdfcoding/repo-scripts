@@ -35,27 +35,16 @@ from dotenv import dotenv_values
 from github3 import GitHub
 from github3.exceptions import NotFoundError
 from github3.repos.contents import Contents
-from github3_utils import iter_repos
 from ruamel.yaml import YAML
+
+# this package
+from repo_scripts.utils import iter_my_repos
 
 config = dotenv_values(".env")
 
-users = [
-		"domdfcoding",
-		]
-
-organizations = [
-		"sphinx-toolbox",
-		"GunShotMatch",
-		"python-coincidence",
-		"python-formate",
-		"repo-helper",
-		"PyMassSpec",
-		]
-
 if __name__ == "__main__":
 
-	for repo in iter_repos(GitHub(token=config["GITHUB_TOKEN"]), users, organizations):
+	for repo in iter_my_repos(GitHub(token=config["GITHUB_TOKEN"])):
 		if repo.archived:
 			continue
 

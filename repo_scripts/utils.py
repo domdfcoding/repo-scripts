@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #
-#  close_pre_commit_pulls.py
+#  utils.py
 """
-Close pre-commit.ci pull requests on managed repositories.
+Shared utilities.
 """
 #
 #  Copyright © 2026 Dominic Davis-Foster <dominic@davis-foster.co.uk>
@@ -27,44 +27,49 @@ Close pre-commit.ci pull requests on managed repositories.
 #
 
 # stdlib
-import sys
+from subprocess import Popen
+from typing import Iterator
 
 # 3rd party
-from dotenv import dotenv_values
+from domdf_python_tools.typing import PathLike
 from github3 import GitHub
-from github3.pulls import ShortPullRequest
-from github3.repos import Repository as GitHubRepository
+from github3.repos import ShortRepository
+from github3_utils import iter_repos
+from southwark.repo import Repo
 
-# this package
-from repo_scripts.utils import iter_my_repos
+__all__ = ["clone", "iter_my_repos", "users", "organizations"]
 
-config = dotenv_values(".env")
 
-if __name__ == "__main__":
-	retv = 0
+def clone(url: str, dest: PathLike) -> Repo:
+	"""
+	Clones the given URL and returns the :class:`southwark.repo.Repo` object representing it.
 
-	client = GitHub(token=config["GITHUB_TOKEN"])
-	for repo in iter_my_repos(client):
-		if repo.archived:
-			continue
-		if repo.private:
-			continue
+	:param url:
+	:param dest:
+	"""
 
-		owner = repo.owner.login
-		repository_name = repo.name
+	process = Popen(["git", "clone", url, dest])
+	process.communicate()
+	process.wait()
 
-		github_repo: GitHubRepository = client.repository(owner, repository_name)
+	return Repo(dest)
 
-		# TODO: check if managed (has repo-helper.yml)
 
-		pull_requests = list(github_repo.pull_requests(state="open", head="pre-commit-ci-update-config"))
-		if not pull_requests:
-			continue
+users = [
+		"domdfcoding",
+		]
 
-		# assert len(pull_requests) == 1, repo.full_name
-		pr: ShortPullRequest = pull_requests[0]
-		if pr.title != "[pre-commit.ci] pre-commit autoupdate":
-			continue
-		print(repo.full_name, pr, pr.close())
+organizations = [
+		"sphinx-toolbox",
+		"GunShotMatch",
+		"potbanksoftware",
+		"python-coincidence",
+		"python-formate",
+		"repo-helper",
+		"PyMassSpec",
+		]
 
-	sys.exit(retv)
+
+def iter_my_repos(client: GitHub) -> Iterator[ShortRepository]:
+
+	yield from iter_repos(client, users, organizations)
