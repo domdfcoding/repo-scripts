@@ -40,12 +40,19 @@ from repo_helper_github.exceptions import NoSuchRepository, OrganizationError
 # this package
 from repo_scripts.utils import clone, get_github_token, iter_my_repos, organizations
 
-if __name__ == "__main__":
+__all__ = ["update_labels"]
+
+
+def update_labels(client: GitHub, github_token: str) -> int:
+	"""
+	Update status labels on managed repositories.
+
+	:param client:
+	:param github_token:
+	"""
+
 	retv = 0
 
-	token = get_github_token()
-
-	client = GitHub(token=token)
 	for repo in iter_my_repos(client):
 		if repo.archived:
 			continue
@@ -72,7 +79,7 @@ if __name__ == "__main__":
 			# Clone to tmpdir
 			clone(repo.html_url, tmpdir)
 
-			manager = GitHubManager(token, target_repo=tmpdir, verbose=False, colour=True)
+			manager = GitHubManager(github_token, target_repo=tmpdir, verbose=False, colour=True)
 
 			try:
 				retv |= manager.create_labels(org=repo.owner.login in organizations)
@@ -85,4 +92,11 @@ if __name__ == "__main__":
 				retv |= 1
 				continue
 
+	return retv
+
+
+if __name__ == "__main__":
+	token = get_github_token()
+
+	retv = update_labels(GitHub(token=token), github_token=token)
 	sys.exit(retv)

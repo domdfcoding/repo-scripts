@@ -27,8 +27,7 @@ Show supported Python versions for each repository.
 #
 
 # stdlib
-from collections.abc import Mapping
-from typing import Any
+from typing import Any, Mapping
 
 # 3rd party
 from github3 import GitHub
@@ -40,9 +39,17 @@ from ruamel.yaml import YAML
 # this package
 from repo_scripts.utils import get_github_token, iter_my_repos
 
-if __name__ == "__main__":
+__all__ = ["show_python_versions"]
 
-	for repo in iter_my_repos(GitHub(token=get_github_token())):
+
+def show_python_versions(client: GitHub) -> None:
+	"""
+	Show supported Python versions for each repository.
+
+	:param client:
+	"""
+
+	for repo in iter_my_repos(client):
 
 		if repo.archived:
 			continue
@@ -50,12 +57,6 @@ if __name__ == "__main__":
 		if repo.name == "contributing" or "-stubs" in repo.name:
 			continue
 
-		repo_dict = {
-				"id": repo.id,
-				"name": repo.name,
-				"html_url": repo.html_url,
-				"owner": {"login": repo.owner.login},
-				}
 		try:
 			c: Contents = repo.file_contents("repo_helper.yml", "master")
 		except NotFoundError:
@@ -81,10 +82,6 @@ if __name__ == "__main__":
 			print(repo.full_name)
 			print("  No python versions set")
 
-		# try:
-		# 	retv |= update_repository(repo_dict)
-		# except Exception as e:
-		# 	traceback.print_exc()
-		# 	retv |= 1
 
-	# sys.exit(retv)
+if __name__ == "__main__":
+	show_python_versions(GitHub(token=get_github_token()))

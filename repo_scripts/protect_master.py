@@ -42,7 +42,7 @@ from repo_helper_github.exceptions import NoSuchRepository, OrganizationError
 # this package
 from repo_scripts.utils import clone, get_github_token, iter_my_repos, organizations
 
-__all__ = ["save_checked_repos"]
+__all__ = ["protect_master", "save_checked_repos"]
 
 data_file = PathPlus("reprotected_repos.json")
 if data_file.exists():
@@ -55,14 +55,16 @@ def save_checked_repos() -> None:  # noqa: D103
 	data_file.dump_json(checked_repos)
 
 
-if __name__ == "__main__":
-	atexit.register(save_checked_repos)
+def protect_master(client: GitHub, github_token: str) -> int:
+	"""
+	Update branch protection rules for the master branch.
+
+	:param client:
+	:param github_token:
+	"""
 
 	retv = 0
 
-	token = get_github_token()
-
-	client = GitHub(token=token)
 	for repo in iter_my_repos(client):
 		if repo.archived:
 			continue
@@ -91,7 +93,7 @@ if __name__ == "__main__":
 			# Clone to tmpdir
 			clone(repo.html_url, tmpdir)
 
-			manager = GitHubManager(token, target_repo=tmpdir, verbose=False, colour=True)
+			manager = GitHubManager(github_token, target_repo=tmpdir, verbose=False, colour=True)
 
 			try:
 				retv |= manager.protect_branch("master", org=repo.owner.login in organizations)
@@ -106,4 +108,11 @@ if __name__ == "__main__":
 
 			checked_repos.append(f"{repo.owner.login}/{repo.name}")
 
+	return retv
+
+
+if __name__ == "__main__":
+	atexit.register(save_checked_repos)
+	token = get_github_token()
+	retv = protect_master(client=GitHub(token=token), github_token=token)
 	sys.exit(retv)

@@ -26,9 +26,6 @@ Close pre-commit.ci pull requests on managed repositories.
 #  OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-# stdlib
-import sys
-
 # 3rd party
 from github3 import GitHub
 from github3.pulls import ShortPullRequest
@@ -37,10 +34,16 @@ from github3.repos import Repository as GitHubRepository
 # this package
 from repo_scripts.utils import get_github_token, iter_my_repos
 
-if __name__ == "__main__":
-	retv = 0
+__all__ = ["close_pre_commit_pulls"]
 
-	client = GitHub(token=get_github_token())
+
+def close_pre_commit_pulls(client: GitHub) -> None:
+	"""
+	Close pre-commit.ci pull requests on managed repositories.
+
+	:param client:
+	"""
+
 	for repo in iter_my_repos(client):
 		if repo.archived:
 			continue
@@ -62,6 +65,9 @@ if __name__ == "__main__":
 		pr: ShortPullRequest = pull_requests[0]
 		if pr.title != "[pre-commit.ci] pre-commit autoupdate":
 			continue
+
 		print(repo.full_name, pr, pr.close())
 
-	sys.exit(retv)
+
+if __name__ == "__main__":
+	close_pre_commit_pulls(GitHub(token=get_github_token()))
