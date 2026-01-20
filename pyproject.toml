@@ -60,3 +60,10 @@ reformat = true
 [tool.snippet-fmt.languages.ini]
 
 [tool.snippet-fmt.languages.json]
+
+[tool.dep_checker]
+namespace_packages = [ "ruamel.yaml",]
+
+[tool.dep_checker.name_mapping]
+github3_py = "github3"
+python_dotenv = "dotenv"

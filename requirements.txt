@@ -1,0 +1,4 @@
+github3-utils>=0.7.1
+github3.py>=4.0.1
+python-dotenv>=1.2.1
+ruamel.yaml>=0.19.1
