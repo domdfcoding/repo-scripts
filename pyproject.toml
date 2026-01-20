@@ -29,13 +29,20 @@ platforms = [ "Windows", "macOS", "Linux",]
 
 [tool.whey]
 base-classifiers = []
-python-versions = [ "3.9",]
+python-versions = [ "3.8", "3.9", "3.10", "3.11", "3.12",]
 python-implementations = [ "CPython",]
 platforms = [ "Windows", "macOS", "Linux",]
 license-key = "MIT"
 package = "repo_scripts"
 
 [tool.importcheck]
+always = [
+    "repo_scripts.close_pre_commit_pulls",
+    "repo_scripts.protect_master",
+    "repo_scripts.show_excluded_files",
+    "repo_scripts.show_python_version",
+    "repo_scripts.update_labels",
+]
 
 [tool.mypy]
 python_version = "3.9"
